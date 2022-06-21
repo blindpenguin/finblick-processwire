@@ -7,29 +7,29 @@ namespace ProcessWire;
 /** @var WireDatabase $database */
 $rm = $wire->modules->get('RockMigrations');
 
-$rm->createField('risk_level', 'options', [
-    'label' => 'Risk Level',
-    'label1024' => 'Risiko Level',
-    'type' => 'options',
-    'options' => [
-        1 => 'VERYLOW|Very Low',
-        2 => 'LOW|Low',
-        3 => 'MIDDLE|Middle',
-        4 => 'HIGH|High',
-        5 => 'VERYHIGH|Very High',
-    ],
-    'optionLabels' => [
-        1024 => [
-            'Sehr niedrig',
-            'Niedrig',
-            'Mittel',
-            'Hoch',
-            'Sehr hoch',
-        ],
-    ],
-    'columnWidth' => 50,
-    'tags' => ['RMContent', 'RMProduct']
-]);
+//$rm->createField('risk_level', 'options', [
+//    'label' => 'Risk Level',
+//    'label1024' => 'Risiko Level',
+//    'type' => 'options',
+//    'options' => [
+//        1 => 'VERYLOW|Very Low',
+//        2 => 'LOW|Low',
+//        3 => 'MIDDLE|Middle',
+//        4 => 'HIGH|High',
+//        5 => 'VERYHIGH|Very High',
+//    ],
+//    'optionLabels' => [
+//        'de' => [
+//            'Sehr niedrig',
+//            'Niedrig',
+//            'Mittel',
+//            'Hoch',
+//            'Sehr hoch',
+//        ],
+//    ],
+//    'columnWidth' => 50,
+//    'tags' => ['RMContent', 'RMProduct']
+//]);
 
 $rm->createField('test_field', 'options', [
     'label' => 'Test Field',
@@ -70,20 +70,20 @@ $rm->createField('test_field', 'options', [
 //    }
 //}
 
-$rm->createField('profit_level', 'options', [
-    'label' => 'Profit Level',
-    'label1024' => 'Profit Level',
-    'type' => 'options',
-    'options' => [
-        1 => 'VERYLOW|Very Low',
-        2 => 'LOW|Low',
-        3 => 'MIDDLE|Middle',
-        4 => 'HIGH|High',
-        5 => 'VERYHIGH|Very High',
-    ],
-    'columnWidth' => 50,
-    'tags' => ['RMContent', 'RMProduct']
-]);
+//$rm->createField('profit_level', 'options', [
+//    'label' => 'Profit Level',
+//    'label1024' => 'Profit Level',
+//    'type' => 'options',
+//    'options' => [
+//        1 => 'VERYLOW|Very Low',
+//        2 => 'LOW|Low',
+//        3 => 'MIDDLE|Middle',
+//        4 => 'HIGH|High',
+//        5 => 'VERYHIGH|Very High',
+//    ],
+//    'columnWidth' => 50,
+//    'tags' => ['RMContent', 'RMProduct']
+//]);
 
 //if ($fields->get('profit_level')) {
 //    $profitLevel = $fields->get('profit_level');
@@ -104,8 +104,8 @@ $rm->createField('profit_level', 'options', [
 $rm->createTemplate('financial-product');
 $rm->setTemplateFields('financial-product', [
     'title',
-    'risk_level',
-    'profit_level',
+    //'risk_level',
+    //'profit_level',
     'content',
 ]);
 $rm->setTemplateData('financial-product', [
