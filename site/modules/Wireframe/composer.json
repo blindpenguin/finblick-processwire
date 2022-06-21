@@ -1,0 +1,20 @@
+{
+    "name": "wireframe-framework/wireframe",
+    "type": "pw-module",
+    "description": "Wireframe is an output framework for ProcessWire CMS/CMF.",
+    "keywords": [ "framework", "processwire" ],
+    "homepage": "https://wireframe-framework.com",
+    "license": "MPL-2.0",
+    "authors": [
+        {
+            "name": "Teppo Koivula",
+            "homepage": "https://wireframe-framework.com",
+            "email": "teppo@wireframe-framework.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "processwire/processwire": ">=3.0.112",
+        "wireframe-framework/processwire-composer-installer": "^1.0.0"
+    }
+}

@@ -1,0 +1,201 @@
+<?php namespace Daun\Dashboard;
+
+use ProcessWire\AdminThemeFramework;
+use ProcessWire\Page;
+use ProcessWire\Selectors;
+use function ProcessWire\__;
+use function ProcessWire\wireIconMarkup;
+
+// Include abstract panel base class
+require_once dirname(__DIR__).'/Dashboard/DashboardPanel.class.php';
+
+class DashboardPanelShortcuts extends DashboardPanel
+{
+    public static function getModuleInfo()
+    {
+        return array_merge(
+            parent::getModuleInfo(),
+            [
+                'title'    => __('Dashboard Panel: Shortcuts', __FILE__),
+                'summary'  => __('Display a list of shortcuts to admin pages', __FILE__),
+                'author'   => 'Philipp Daun',
+                'version'  => '1.4.2',
+            ]
+        );
+    }
+
+    const displayOptions = [
+        'grid',
+        'list',
+    ];
+
+    const defaultDisplayOption = 'grid';
+
+    public function getIcon()
+    {
+        return 'flash';
+    }
+
+    public function getTitle()
+    {
+        return $this->_('Shortcuts');
+    }
+
+    public function getClassNames()
+    {
+        return ["{$this}--{$this->display}"];
+    }
+
+    public function getContent()
+    {
+        if (!($this->shortcuts && count($this->shortcuts))) {
+            return;
+        }
+
+        $rows = array_map(function ($shortcut, $key) {
+            $page = null;
+            $pageIcon = '';
+            $title = '';
+            $summary = '';
+            $url = '';
+            $icon = '';
+
+            // Passed array? Extract to shortcut, icon and summary
+            // e.g. [1020, 'user', 'Edit your profile']
+            if (is_array($shortcut)) {
+                // Avoiding list() construct since indices can be undefined
+                $summary = $shortcut[2] ?? null;
+                $icon = $shortcut[1] ?? null;
+                $shortcut = $shortcut[0] ?? null;
+            }
+
+            // Get URL from shortcut if page/id/selector given,
+            // otherwise treat shortcut as URL string
+            if (is_object($shortcut) && $shortcut instanceof Page) {
+                $page = $shortcut;
+            } elseif (is_int($shortcut)) {
+                $page = $this->pages->get($shortcut);
+            } elseif (is_string($shortcut)) {
+                if (Selectors::stringHasSelector($shortcut)) {
+                    $page = $this->pages->get($shortcut);
+                } else {
+                    $url = $shortcut;
+                }
+            }
+
+            if ($page) {
+                if (!$this->isPageViewable($page)) {
+                    return;
+                }
+                $info = $this->getPageInfo($page);
+                $title = is_string($key) ? $key : $info->title;
+                $summary = $summary ?: $info->summary;
+                $pageIcon = $info->icon;
+                $url = $page->url;
+            } elseif ($url) {
+                $title = $key;
+            } else {
+                return;
+            }
+
+            $icon = $this->renderPageIcon($icon ?: $pageIcon);
+            $title = $this->sanitizer->entities1($title);
+            $summary = $this->summaries ? $this->sanitizer->entities1($summary) : '';
+            $linkClass = $summary && $this->display === 'grid' ? 'tooltip' : '';
+            $isAdminLink = strpos($url, $this->config->urls->admin) === 0;
+            $target = !$isAdminLink ? '_blank' : '';
+
+            return
+                "<li>
+                    <a href='{$url}' class='{$linkClass}' title='{$summary}' target='{$target}'>
+                        <span>
+                            {$icon}
+                            <span class='title'>{$title}</span>
+                        </span>
+                        <span>
+                            <span class='summary' title='{$summary}'>{$summary}</span>
+                        </span>
+                    </a>
+                </li>";
+        }, $this->shortcuts, array_keys($this->shortcuts));
+
+        $output = implode('', $rows);
+
+        return "<ul data-display='{$this->display}'>{$output}</ul>";
+    }
+
+    protected function renderPageIcon($icon)
+    {
+        if ($this->icon !== null) {
+            $icon = $this->icon;
+        }
+        $icon = $icon ?: $this->fallbackIcon;
+
+        return $icon ? wireIconMarkup($icon, 'fw') : '';
+    }
+
+    protected function getPageInfo($page)
+    {
+        $adminTheme = $this->wire('adminTheme');
+        $hasInfoMethods = ($adminTheme && $adminTheme instanceof AdminThemeFramework);
+
+        $title = '';
+        $icon = '';
+        $summary = '';
+
+        if ($page->template == 'admin') {
+            if ($page->process) {
+                $info = $this->modules->getModuleInfoVerbose($page->process);
+                $summary = $page->summary ?: ($info['summary'] ?? '');
+                $icon = $info['icon'] ?? '';
+            }
+            $icon = $page->getIcon() ?: $icon;
+            $title = $hasInfoMethods ? $adminTheme->getPageTitle($page) : '';
+            if (!$icon) {
+                switch ($page->id) {
+                case 22: $icon = 'gears'; break; // Setup
+                case 21: $icon = 'plug'; break; // Modules
+                case 28: $icon = 'key'; break; // Access
+            }
+            }
+        }
+        if (!$title) {
+            $title = $page->get('title|name');
+        }
+        if (!$icon) {
+            $icon = $page->getIcon();
+        }
+
+        return (object) compact(
+            'title',
+            'summary',
+            'icon'
+        );
+    }
+
+    protected function isPageViewable($page)
+    {
+        if (!$page || !$page->url) {
+            return false;
+        }
+        if (!$this->checkAccess) {
+            return true;
+        }
+        if ($page->template == 'admin' && !$page->viewable()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function setup()
+    {
+        parent::setup();
+        $this->shortcuts = $this->data['shortcuts'] ?? [];
+        $this->display = $this->sanitizer->option($this->data['display'] ?? '', self::displayOptions) ?: self::defaultDisplayOption;
+        $this->fallbackIcon = $this->data['fallbackIcon'] ?? 'bookmark-o';
+        $this->icon = $this->data['icon'] ?? null;
+        $this->summaries = $this->data['summaries'] ?? true;
+        $this->checkAccess = $this->data['checkAccess'] ?? true;
+    }
+}
