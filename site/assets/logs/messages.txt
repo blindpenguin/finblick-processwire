@@ -5,3 +5,5 @@
 2022-06-17 18:51:31	admin	http://localhost:8090/processwire/profile/	Profile saved - language
 2022-06-18 11:17:55	admin	http://localhost:8090/processwire/page/edit/?id=1	Populated initial created/modified dates for 'header_image'
 2022-06-19 16:15:16	admin	http://localhost:8090/processwire/page/sort/	Updated sort for 4 pages
+2022-06-21 16:16:30	admin	http://localhost:8090/processwire/profile/	Profile saved - email
+2022-06-21 16:17:02	admin	http://localhost:8090/processwire/profile/	Profile saved - pass
